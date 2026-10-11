@@ -4,3 +4,8 @@ export interface User {
     email: string;
     status: string;
 }
+
+export interface UserRequest {
+    fullName: string;
+    email: string;
+}
