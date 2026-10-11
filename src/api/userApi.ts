@@ -1,6 +1,7 @@
 import type { User, UserRequest } from "../types/user";
 
-const BASE_URL = "/api/users";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const BASE_URL = `${API_BASE_URL}/users`;
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -9,18 +10,16 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
-    // backend එකේ {"error": "..."} message එක කියවනවා
     let message = `Request failed (${res.status})`;
     try {
       const body = await res.json();
       if (body.error) message = body.error;
     } catch {
-      // body එකක් නැත්නම් default message එක
     }
     throw new Error(message);
   }
 
-  if (res.status === 204) return undefined as T; // body නැති response (DELETE)
+  if (res.status === 204) return undefined as T; 
   return res.json() as Promise<T>;
 }
 
