@@ -1,48 +1,57 @@
-import {use, useState} from "react";
-import UserForm from "./components/UserForm";   
+import { useEffect, useState } from "react";
 import UserItem from "./components/UserItem";
-import {getUsers} from "./api/userApi";
-import type { User, UserRequest } from './types/user';
+import UserForm from "./components/UserForm";
+import { getUsers, createUser } from "./api/userApi";
+import type { User, UserRequest } from "./types/user";
 
 export default function App() {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLoad = async () => {
-    try {
-      setError(null);
-      setUsers(await getUsers());
-    } catch (e) {
-      setError((e instanceof Error) ? e.message : "Something went wrong");
+  useEffect(() => {
+    async function load() {
+      try {
+        setUsers(await getUsers());
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
     }
-  };
+    load();
+  }, []);
 
-  const handleAdd = (data: UserRequest) => {
-    const newUser: User={ id: Date.now(), ...data, status: "Active" };
-    setUsers([...users, newUser]);
-  };
+ const handleAdd = async (data: UserRequest) => {
+  const created = await createUser(data);
+  setUsers((prev) => [...prev, created]);
+};
 
   return (
     <div>
       <h1>User Management</h1>
       <UserForm onSubmit={handleAdd} />
-      <button onClick={handleLoad}>Load Users</button>
+
+      {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <table border={1} cellPadding={5}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(u => (
-            <UserItem key={u.id} user={u} />
-          ))}
-        </tbody>
-      </table>
+
+      {!loading && !error && (
+        <table border={1} cellPadding={6}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full name</th>
+              <th>Email</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <UserItem key={u.id} user={u} />
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
