@@ -1,5 +1,7 @@
+import {useState} from "react";
+import UserForm from "./components/UserForm";   
 import UserItem from "./components/UserItem";
-import type { User } from './types/user';
+import type { User, UserRequest } from './types/user';
 
 const fakeUsers: User[] = [
   {id:1, fullName: "Dasuni Senanayake", email: "dasuni123@gmail.com", status: "Active"},
@@ -9,9 +11,17 @@ const fakeUsers: User[] = [
 ];
 
 export default function App() {
+  const [users, setUsers] = useState<User[]>(fakeUsers);
+
+  const handleAdd = (user: UserRequest) => {
+    const newUser: User={ id: Date.now(), ...user, status: "Active" };
+    setUsers([...users, newUser]);
+  };
+
   return (
     <div>
       <h1>User Management</h1>
+      <UserForm onSubmit={handleAdd} />
       <table border={1} cellPadding={5}>
         <thead>
           <tr>
