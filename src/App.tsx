@@ -1,57 +1,21 @@
-import { useEffect, useState } from "react";
-import UserItem from "./components/UserItem";
+import { useState } from "react";
+import { UserProvider } from "./context/UserProvider";
 import UserForm from "./components/UserForm";
-import { getUsers } from "./api/userApi";
-import type { User, UserRequest } from "./types/user";
+import UserList from "./components/UserList";
+import type { User } from "./types/user";
 
 export default function App() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        setUsers(await getUsers());
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
-  const handleAdd = (data: UserRequest) => {
-    const newUser: User = { id: Date.now(), ...data, status: "ACTIVE" };
-    setUsers([...users, newUser]);
-  };
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   return (
-    <div>
+    <UserProvider>
       <h1>User Management</h1>
-      <UserForm onSubmit={handleAdd} />
-
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {!loading && !error && (
-        <table border={1} cellPadding={6}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Full name</th>
-              <th>Email</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <UserItem key={u.id} user={u} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+      <UserForm
+        key={editingUser?.id ?? "new"}
+        editingUser={editingUser}
+        onDone={() => setEditingUser(null)}
+      />
+      <UserList onEdit={setEditingUser} />
+    </UserProvider>
   );
 }
