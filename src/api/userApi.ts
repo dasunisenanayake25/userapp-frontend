@@ -9,18 +9,17 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
-    // backend එකේ {"error": "..."} message එක කියවනවා
     let message = `Request failed (${res.status})`;
     try {
       const body = await res.json();
       if (body.error) message = body.error;
     } catch {
-      // body එකක් නැත්නම් default message එක
+      
     }
     throw new Error(message);
   }
 
-  if (res.status === 204) return undefined as T; // body නැති response (DELETE)
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
