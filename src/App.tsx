@@ -1,20 +1,24 @@
-import {useState} from "react";
+import {use, useState} from "react";
 import UserForm from "./components/UserForm";   
 import UserItem from "./components/UserItem";
+import {getUsers} from "./api/userApi";
 import type { User, UserRequest } from './types/user';
 
-const fakeUsers: User[] = [
-  {id:1, fullName: "Dasuni Senanayake", email: "dasuni123@gmail.com", status: "Active"},
-  {id:2, fullName: "Manuthi Kasuntha", email: "manuthi456@gmail.com", status: "Inactive"},
-  {id:3, fullName: "Ravindu Anushka", email: "ravindu789@gmail.com", status: "Active"},
-  {id:4, fullName: "Chalindu Kalhara", email: "chalindu012@gmail.com", status: "Inactive"}
-];
-
 export default function App() {
-  const [users, setUsers] = useState<User[]>(fakeUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAdd = (user: UserRequest) => {
-    const newUser: User={ id: Date.now(), ...user, status: "Active" };
+  const handleLoad = async () => {
+    try {
+      setError(null);
+      setUsers(await getUsers());
+    } catch (e) {
+      setError((e instanceof Error) ? e.message : "Something went wrong");
+    }
+  };
+
+  const handleAdd = (data: UserRequest) => {
+    const newUser: User={ id: Date.now(), ...data, status: "Active" };
     setUsers([...users, newUser]);
   };
 
@@ -22,6 +26,8 @@ export default function App() {
     <div>
       <h1>User Management</h1>
       <UserForm onSubmit={handleAdd} />
+      <button onClick={handleLoad}>Load Users</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <table border={1} cellPadding={5}>
         <thead>
           <tr>
@@ -32,7 +38,7 @@ export default function App() {
           </tr>
         </thead>
         <tbody>
-          {fakeUsers.map(u => (
+          {users.map(u => (
             <UserItem key={u.id} user={u} />
           ))}
         </tbody>
