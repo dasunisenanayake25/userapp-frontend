@@ -18,26 +18,28 @@ export default function UserList({ onEdit }: UserListProps) {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (users.length === 0) return <p>No users yet.</p>;
+  if (loading) return <p className="muted">Loading...</p>;
+  if (error) return <p className="error">{error}</p>;
+  if (users.length === 0) return <p className="muted">No users yet.</p>;
 
   return (
-    <table border={1} cellPadding={6}>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Full name</th>
-          <th>Email</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map((u) => (
-          <UserItem key={u.id} user={u} onEdit={onEdit} onDelete={handleDelete} />
-        ))}
-      </tbody>
-    </table>
+    <div className="card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <UserItem key={u.id} user={u} onEdit={onEdit} onDelete={handleDelete} />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

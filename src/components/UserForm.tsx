@@ -36,7 +36,7 @@ export default function UserForm({ editingUser, onDone }: UserFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="card form" onSubmit={handleSubmit}>
       <h2>{editingUser ? `Edit user #${editingUser.id}` : "Add user"}</h2>
       <input
         placeholder="Full name"
@@ -52,11 +52,11 @@ export default function UserForm({ editingUser, onDone }: UserFormProps) {
         {submitting ? "Saving..." : editingUser ? "Update" : "Create"}
       </button>
       {editingUser && (
-        <button type="button" onClick={onDone}>
+        <button type="button" className="secondary" onClick={onDone}>
           Cancel
         </button>
       )}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </form>
   );
 }

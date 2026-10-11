@@ -9,13 +9,15 @@ export default function App() {
 
   return (
     <UserProvider>
-      <h1>User Management</h1>
-      <UserForm
-        key={editingUser?.id ?? "new"}
-        editingUser={editingUser}
-        onDone={() => setEditingUser(null)}
-      />
-      <UserList onEdit={setEditingUser} />
+      <div className="container">
+        <h1>User Management</h1>
+        <UserForm
+          key={editingUser?.id ?? "new"}
+          editingUser={editingUser}
+          onDone={() => setEditingUser(null)}
+        />
+        <UserList onEdit={setEditingUser} />
+      </div>
     </UserProvider>
   );
 }
